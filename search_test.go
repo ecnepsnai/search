@@ -105,3 +105,22 @@ func TestFeedStructWithoutField(t *testing.T) {
 	}, "bar")
 	s.Search("")
 }
+
+func TestFeedSliceValue(t *testing.T) {
+	s := search.Search{}
+
+	type exampleType struct {
+		String string
+		Slice  []string
+	}
+
+	s.Feed(exampleType{
+		String: "apple",
+		Slice:  []string{"orange", "banana"},
+	}, "String", "Slice")
+
+	results := s.Search("banana")
+	if len(results) != 1 {
+		t.Errorf("Unexpected number of results")
+	}
+}

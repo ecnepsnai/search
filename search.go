@@ -1,6 +1,6 @@
 /*
-Package search provides a mechanism for searching across structures using the Levenshtein distance method, commonly
-referred to as "fuzzy" searching.
+Package search provides a mechanism for searching fields within structures using the Levenshtein distance method,
+commonly referred to as "fuzzy" searching.
 */
 package search
 
@@ -25,13 +25,28 @@ type rankedObject struct {
 func (o object) rank(query string) int {
 	highestRank := -1
 	for _, field := range o.fields {
-		value := strings.ToLower(reflect.ValueOf(o.o).FieldByName(field).String())
-		rank := fuzzy.RankMatch(query, value)
-		if rank > highestRank {
-			highestRank = rank
+		for _, value := range valuesForField(o, field) {
+			rank := fuzzy.RankMatch(query, value)
+			if rank > highestRank {
+				highestRank = rank
+			}
 		}
 	}
 	return highestRank
+}
+
+func valuesForField(o object, fieldName string) []string {
+	field := reflect.ValueOf(o.o).FieldByName(fieldName)
+
+	if strSlice, isStrSlice := field.Interface().([]string); isStrSlice {
+		lc := make([]string, len(strSlice))
+		for i, s := range strSlice {
+			lc[i] = strings.ToLower(s)
+		}
+		return lc
+	}
+
+	return []string{strings.ToLower(field.String())}
 }
 
 // Search describes a search instance with loaded objects. Multiple individual queries can be performed against a single
@@ -41,7 +56,8 @@ type Search struct {
 }
 
 // Feed will load searchable data into the instance. Not all objects fed into the search need to be of the same type,
-// However `o` must be a struct which must contain each field specified, otherwise it will panic.
+// However `o` must be a struct which must contain each field specified, otherwise it will panic. Specified fields
+// should be a string or a []string, other types may not work as expected.
 func (s *Search) Feed(o interface{}, fields ...string) {
 	value := reflect.ValueOf(o)
 	if value.Kind() != reflect.Struct {

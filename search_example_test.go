@@ -8,60 +8,50 @@ import (
 
 func ExampleSearch_Search() {
 	type Fruit struct {
-		ID   int
-		Name string
+		ID           int
+		Name         string
+		Translations []string
 	}
 	type Vegetable struct {
-		ID   int
-		Name string
+		ID           int
+		Name         string
+		Translations []string
 	}
 
 	fruits := []Fruit{
 		{
-			ID:   1,
-			Name: "Apple",
+			ID:           1,
+			Name:         "Apple",
+			Translations: []string{"Pomme", "Manzana"},
 		},
 		{
-			ID:   2,
-			Name: "Orange",
-		},
-		{
-			ID:   3,
-			Name: "Banana",
-		},
-		{
-			ID:   4,
-			Name: "Tomato",
+			ID:           2,
+			Name:         "Banana",
+			Translations: []string{"Banane", "Plátano"},
 		},
 	}
 	vegetables := []Vegetable{
 		{
-			ID:   1,
-			Name: "Broccoli",
+			ID:           1,
+			Name:         "Broccoli",
+			Translations: []string{"Brocoli", "Brócoli"},
 		},
 		{
-			ID:   2,
-			Name: "Carrot",
-		},
-		{
-			ID:   3,
-			Name: "Coiflour",
-		},
-		{
-			ID:   4,
-			Name: "Pepper",
+			ID:           2,
+			Name:         "Carrot",
+			Translations: []string{"Carotte", "Zanahoria"},
 		},
 	}
 
 	s := search.Search{}
 	for _, fruit := range fruits {
-		s.Feed(fruit, "Name")
+		s.Feed(fruit, "Name", "Translations")
 	}
 	for _, vegetable := range vegetables {
-		s.Feed(vegetable, "Name")
+		s.Feed(vegetable, "Name", "Translations")
 	}
 
-	results := s.Search("B")
+	results := s.Search("z")
 
 	for _, result := range results {
 		if fruit, isFruit := result.(Fruit); isFruit {
@@ -72,6 +62,6 @@ func ExampleSearch_Search() {
 		}
 	}
 
-	// output: Vegetable: id=1 name=Broccoli
-	// Fruit: id=3 name=Banana
+	// output: Vegetable: id=2 name=Carrot
+	// Fruit: id=1 name=Apple
 }
