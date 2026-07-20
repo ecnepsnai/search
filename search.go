@@ -1,6 +1,10 @@
 /*
 Package search provides a mechanism for searching fields within structures using the Levenshtein distance method,
 commonly referred to as "fuzzy" searching.
+
+Deprecated: github.com/ecnepsnai/search is deprecated and replaced by git.ecn.io/ian/search. All users should migrate to
+git.ecn.io/ian/search for continued updates. Tag v1.0.0 is drop-in compatible copy of the last release of
+github.com/ecnepsnai/search.
 */
 package search
 
